@@ -5619,6 +5619,28 @@ textarea.form-control {
     .bf-search input { padding: 0.4rem 0.6rem 0.4rem 1.8rem; font-size: 0.8rem; width: 200px; }
     .bf-sel { width: auto; min-width: 140px; max-width: 200px; padding: 0.4rem 0.5rem; font-size: 0.8rem; cursor: pointer; }
     .bf-note { color: var(--text-muted); font-size: 0.74rem; }
+
+    /* Upload popup — V2 mockup layout */
+    .btn-upload { color: var(--primary-color); border-color: rgba(99,102,241,0.45); }
+    .btn-upload:hover { background: rgba(99,102,241,0.06); }
+    .up-dl-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; font-weight: 600; font-size: 0.88rem; font-family: inherit; padding: 0.6rem 1rem; border-radius: 0.5rem; cursor: pointer; }
+    .up-dl-btn:hover { background: #d1fae5; }
+    .up-dl-hint { font-size: 0.74rem; color: var(--text-muted); margin: 0.35rem 0 0.85rem; }
+    .up-warn { display: flex; gap: 0.55rem; align-items: flex-start; background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; border-radius: 0.5rem; padding: 0.7rem 0.85rem; font-size: 0.84rem; line-height: 1.5; margin-bottom: 0.85rem; }
+    .up-warn i { color: #c2410c; margin-top: 0.2rem; }
+    .up-drop { padding: 1.6rem 1rem; }
+    .up-drop > i { color: var(--primary-color); font-size: 1.8rem; }
+    .up-choose { color: var(--primary-color); font-weight: 600; }
+    #tabApprovals { margin-left: auto; color: #b45309; }
+    #tabApprovals.active { color: var(--primary-color); }
+    .appr-count { background: #f59e0b !important; color: #fff !important; }
+    .appr-alert { display: flex; align-items: center; gap: 0.75rem; background: #fffbeb; border: 1px solid #fcd34d; border-left: 4px solid #f59e0b; border-radius: 0.6rem; padding: 0.7rem 0.95rem; margin-bottom: 0.9rem; font-size: 0.86rem; color: #78350f; }
+    .appr-alert > i { color: #d97706; font-size: 1.1rem; }
+    .appr-alert > div { flex: 1; }
+    .appr-alert .muted { color: #92400e; font-weight: 400; }
+    #tabApprovals { display: none !important; }
+    .appr-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .appr-head h2 { margin: 0; font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
     </style>
 </head>
 <body>
@@ -5673,7 +5695,6 @@ textarea.form-control {
                             <option value="mgr:Maria Santos Cruz">Team Manager — Maria Santos Cruz</option>
                             <option value="mgr:Daniel John Smith">Team Manager — Daniel John Smith</option>
                             <option value="mgr:Khalid Saeed Al Falasi">Team Manager — Khalid Saeed Al Falasi</option>
-                            <option value="mgr:Layla Ahmed Nasser">Team Manager — Layla Ahmed Nasser</option>
                         </select></label>
                     
                     <a href="https://org.maidstech.ai/org-chart" target="_blank" rel="noopener noreferrer" class="header-icon-btn" title="Org Chart"><i class="fas fa-sitemap"></i></a>
@@ -5758,17 +5779,18 @@ textarea.form-control {
                         <button type="button" class="roster-tab" data-tab="emiratis" role="tab"><i class="fas fa-id-badge"></i> Emiratis <span class="tab-count" data-count="emiratis">0</span></button>
                         <button type="button" class="roster-tab" data-tab="overseas" role="tab"><i class="fas fa-globe"></i> Overseas <span class="tab-count" data-count="overseas">0</span></button>
                         <button type="button" class="roster-tab" data-tab="expats" role="tab"><i class="fas fa-passport"></i> Expats <span class="tab-count" data-count="expats">0</span></button>
-                        <button type="button" class="roster-tab" data-tab="approvals" role="tab" id="tabApprovals"><i class="fas fa-user-check"></i> Agents' Approvals <span class="tab-count" data-count="approvals">0</span></button>
+                        <button type="button" class="roster-tab" data-tab="approvals" role="tab" id="tabApprovals"><i class="fas fa-inbox"></i> Incentives & Overtime Approvals <span class="tab-count appr-count" data-count="approvals">0</span></button>
                     </div>
 
                     <!-- Toolbar -->
                     <div class="roster-toolbar" id="toolbar">
                         <span class="row-count" id="rowCount">0 employees</span>
                         <div class="tb-right">
-                            <label class="sal-toggle" title="When off, all salary amounts are hidden (****) so you can safely share, record or screenshot your screen. This setting applies to every page."><input type="checkbox" class="salToggle"><span class="sw"></span><i class="fas fa-eye-slash"></i> Show Salaries</label>
+                            
                             <button type="button" class="btn btn-outline btn-sm" id="btnPending"><i class="fas fa-hourglass-half" style="color:#d97706;"></i> Pending Requests <span class="pr-count" id="prCount">0</span></button>
                             <button type="button" class="btn btn-outline btn-sm" id="btnInc" title="In production this page opens on the 22nd of the month (00:00) and closes once you submit"><i class="fas fa-hand-holding-dollar" style="color:#7c3aed;"></i> <span class="lbl">Agents' Incentives</span></button>
                             <button type="button" class="btn btn-outline btn-sm" id="btnOT" title="In production this page opens on the 22nd of the month (00:00) and closes once you submit"><i class="fas fa-business-time" style="color:#0ea5e9;"></i> <span class="lbl">Agents' Overtime</span></button>
+                            <button type="button" class="btn btn-outline btn-sm" id="btnSubs" title="Incentives and overtime your team managers sent for your approval"><i class="fas fa-inbox" style="color:#d97706;"></i> Incentives &amp; Overtime Approvals <span class="pr-count" id="subsCount">0</span></button>
                         <div class="cols-wrap" id="colsWrap">
                             <button type="button" class="btn btn-outline btn-sm" id="btnCols"><i class="fas fa-table-columns"></i> Show additional columns <i class="fas fa-chevron-down" style="font-size:0.6rem;"></i></button>
                             <div class="cols-panel">
@@ -5798,9 +5820,8 @@ textarea.form-control {
                 <div class="bulk-head">
                     <div class="bh-left"><h2 id="bulkTitle">-</h2><div class="bh-sub" id="bulkSub"></div></div>
                     <div class="bh-right">
-                        <label class="sal-toggle" title="When off, all salary amounts are hidden (****) so you can safely share, record or screenshot your screen. This setting applies to every page."><input type="checkbox" class="salToggle"><span class="sw"></span><i class="fas fa-eye-slash"></i> Show Salaries</label>
-                        <button type="button" class="btn btn-outline btn-sm" id="bTemplate" title="Excel file with every agent on this page and the values currently on screen"><i class="fas fa-file-arrow-down"></i> Download Excel File</button>
-                        <button type="button" class="btn btn-outline btn-sm" id="bUpload"><i class="fas fa-file-excel" style="color:#16a34a;"></i> Upload Excel File</button>
+                        
+                        <button type="button" class="btn btn-outline btn-sm btn-upload" id="bUpload"><i class="fas fa-file-excel"></i> Upload Excel File</button>
                         <button type="button" class="btn btn-outline btn-sm" id="bExit"><i class="fas fa-arrow-left"></i> <span id="bExitLbl">Exit</span></button>
                     </div>
                 </div>
@@ -6002,23 +6023,21 @@ textarea.form-control {
 
     <!-- Bulk Excel upload -->
     <div class="modal-overlay" id="uploadModal"><div class="modal modal-upload">
-        <div class="modal-header"><h3><i class="fas fa-file-excel" style="color:#16a34a;"></i> Upload Excel File &mdash; <span id="upPage">-</span></h3><button type="button" class="close-x" data-close="uploadModal"><i class="fas fa-times"></i></button></div>
+        <div class="modal-header"><h3><i class="fas fa-file-excel" style="color:#16a34a;"></i> <span id="upTitle">Upload incentives from Excel</span></h3><button type="button" class="close-x" data-close="uploadModal"><i class="fas fa-times"></i></button></div>
         <div class="modal-body">
             <p class="up-lead" id="upLead"></p>
-            <ul class="up-rules" id="upRules"></ul>
-            <div class="up-links">
-                <button type="button" class="link-btn" id="upSample"><i class="fas fa-download"></i> Download example file</button>
-                <button type="button" class="link-btn" id="upTpl"><i class="fas fa-file-arrow-down"></i> Download IDs template for your agents</button>
-            </div>
+            <button type="button" class="up-dl-btn" id="upTpl"><i class="fas fa-file-arrow-down"></i> <span>Download your file</span></button>
+            <div class="up-dl-hint" id="upDlHint"></div>
+            <div class="up-warn"><i class="fas fa-circle-exclamation"></i><span id="upWarn"></span></div>
             <label class="up-drop" id="upDrop">
                 <i class="fas fa-cloud-arrow-up"></i>
-                <span id="upDropTxt">Click to choose an Excel file, or drag it here</span>
-                <span class="up-hint">.xlsx, .xls or .csv</span>
-                <input type="file" id="upFile" accept=".xlsx,.xls,.csv" style="display:none;">
+                <span id="upDropTxt"><u class="up-choose">Choose a file</u> or drag it here</span>
+                <span class="up-hint">.xlsx or .xls</span>
+                <input type="file" id="upFile" accept=".xlsx,.xls" style="display:none;">
             </label>
             <div class="up-result" id="upResult"></div>
         </div>
-        <div class="modal-footer"><button type="button" class="btn btn-outline" data-close="uploadModal">Cancel</button><button type="button" class="btn btn-primary" id="upConfirm" disabled><i class="fas fa-check"></i> Confirm</button></div>
+        <div class="modal-footer"><button type="button" class="btn btn-outline" data-close="uploadModal">Cancel</button><button type="button" class="btn btn-primary" id="upConfirm" disabled><i class="fas fa-check"></i> Confirm &amp; fill in</button></div>
     </div></div>
 
     <!-- % of basic salary alert -->
@@ -6226,7 +6245,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         var ADDITIONAL_KEYS = COLUMNS.filter(function(c){ return c.type==='additional'; }).map(function(c){ return c.key; });
 
         /* ---------------- State ---------------- */
-        var state = { tab:'all', search:'', manager:'', rosterMgr:'', title:'', dept:'', addl:{}, visibleAdditional:{}, defaultAdditional:{}, showSal:false, fmView:false };
+        var state = { tab:'all', search:'', manager:'', rosterMgr:'', title:'', dept:'', addl:{}, visibleAdditional:{}, defaultAdditional:{}, showSal:true, fmView:false };
 
         /* ---------------- Helpers ---------------- */
         function esc(s){ var d=document.createElement('div'); d.textContent=(s==null?'':String(s)); return d.innerHTML; }
@@ -6897,6 +6916,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if(r.name==='Sok Pisey Chan') r.dept=['Retail'];
                 r.isManager=!!MGRS[r.name];
                 r.pnl=PNL[r.name]||DEPT_PNL[r.dept[0]]||'OS 00';
+                // Demo data: only Remote Agents are agents; other office roles carry an excluded PnL code (V2 BRD §2.1)
+                var NON_AGENT_PNL={ 'Business Analyst':'GX 00', 'Recruiter':'AH 00', 'Risk Analyst':'AK 00', 'Coordinator':'JX 00', 'Data Analyst':'FT 72', 'Specialist':'FT 181' };
+                if(r.titleMain!=='Remote Agent' && EXCLUDED_PNL.indexOf(r.pnl)===-1) r.pnl=NON_AGENT_PNL[r.titleMain]||'MG 00';
                 r.basic = r.empType==='Expat' ? Math.round(r.salary*0.6/50)*50 : r.salary;
                 r.staffId = 20417 + i*23;
                 (r.changeHistory||[]).forEach(function(c){ c.pid=++_pid; });
@@ -7190,7 +7212,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             Object.keys(SUBS).forEach(function(k){ var s=SUBS[k]; Object.keys(s.items).forEach(function(id){ if(effStatus(s.mode, ROWS_BY_ID[id], s.items[id])==='pending') n++; }); });
             return n;
         }
-        function updateApprovalsBadge(){ var el=document.querySelector('.tab-count[data-count="approvals"]'); if(el) el.textContent=pendingApprovalsCount(); }
+        function updateApprovalsBadge(){
+            var n=pendingApprovalsCount(), el=document.querySelector('.tab-count[data-count="approvals"]'); if(el) el.textContent=n; var sc=document.getElementById('subsCount'); if(sc) sc.textContent=n; var sb=document.getElementById('btnSubs'); if(sb) sb.style.display = state.role==='pil' ? '' : 'none';
+            var al=document.getElementById('apprAlert'); if(!al) return;
+            var show = state.role==='pil' && n>0 && state.tab!=='approvals';
+            al.style.display = show ? '' : 'none';
+            if(show){
+                var mgrs={}; Object.keys(SUBS).forEach(function(k){ var s=SUBS[k]; Object.keys(s.items).forEach(function(id){ if(effStatus(s.mode,ROWS_BY_ID[id],s.items[id])==='pending') mgrs[s.mgr]=1; }); });
+                var names=Object.keys(mgrs);
+                al.innerHTML='<i class="fas fa-inbox"></i><div><b>'+n+' incentive / overtime entr'+(n===1?'y':'ies')+' from your team managers '+(n===1?'is':'are')+' waiting for your approval</b><span class="muted"> &middot; sent by '+names.map(esc).join(', ')+'</span></div><button type="button" class="btn btn-primary btn-sm" id="apprGo"><i class="fas fa-arrow-right"></i> Review now</button>';
+            }
+        }
+        document.addEventListener('click', function(e){ if(e.target.closest('#apprGo') || e.target.closest('#btnSubs')){ document.getElementById('tabApprovals').click(); window.scrollTo(0,0); } if(e.target.closest('#apprBack')){ document.querySelector('.roster-tab[data-tab="all"]').click(); } });
         function rowLocked(mode, r){ if(!isMgr()) return false; var it=mgrItem(mode, r); if(!it) return false; var st=effStatus(mode, r, it); return st==='approved' || st==='overridden'; }
 
         function updateBulkButtons(){
@@ -7484,6 +7517,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             var on=state.tab==='approvals';
             toolbarEl.style.display=on?'none':''; filtersEl.style.display=on?'none':'';
             if(on) renderApprovals();
+            updateApprovalsBadge();
             return on;
         }
         function apprRowsHtml(mode, sub){
@@ -7533,7 +7567,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 });
                 html+='</div>';
             });
-            panel.innerHTML='<div class="appr-page">'+html+'</div>';
+            panel.innerHTML='<div class="appr-page"><div class="appr-head"><div><h2><i class="fas fa-inbox" style="color:#d97706;"></i> Incentives & Overtime Approvals</h2><div class="bh-sub">Incentives and overtime your team managers sent for your confirmation. Approve, edit or return each entry; approved entries go to payroll as bonuses for the final manager\'s approval.</div></div><button type="button" class="btn btn-outline btn-sm" id="apprBack"><i class="fas fa-arrow-left"></i> Back to Roster</button></div>'+html+'</div>';
             var rc=document.getElementById('rowCount'); if(rc) rc.textContent='';
         }
         function apLookup(key){ var p=key.split('|'); var s=SUBS[p[0]+'|'+p[1]]; return { sub:s, mode:p[1], r:ROWS_BY_ID[p[2]], it:s.items[p[2]] }; }
@@ -7615,34 +7649,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 saveFile('Agents_Overtime_'+MONTH_LABEL.replace(' ','_')+'.xlsx', buildXlsx(aoa,'Overtime',[10,15,13,32].concat(REF_W)));
             }
         }
-        document.getElementById('bTemplate').addEventListener('click', function(){ downloadExcel(bulkMode); });
         document.getElementById('upTpl').addEventListener('click', function(){ downloadExcel(bulkMode); });
 
-        function openUpload(){ // same popup as the V2 mockup
-            var inc=bulkMode==='inc', am=isMgr(), until=am?'Send for Confirmation':'Save &amp; Submit', dest=am?'sent to '+esc(PIL_NAME):'sent to payroll';
-            document.getElementById('upPage').textContent=am?(inc?'Incentives':'Overtime'):(inc?"Agents' Incentives":"Agents' Overtime");
-            document.getElementById('upLead').innerHTML=inc
-                ? 'Fill in the incentive amounts for many agents at once. The values are written into the table so you can review them before saving or submitting — nothing is '+dest+' until you choose <b>'+until+'</b>.'
-                : 'Fill in the overtime hours and multipliers for many agents at once. The values are written into the table so you can review them before saving or submitting — nothing is '+dest+' until you choose <b>'+until+'</b>.';
-            var common='<li>Row 1 is the header row. Reading starts from row 2 and stops at the first empty row, so no empty rows are allowed between data rows.</li>'
-                +'<li><b>Column A = Agent ID</b> (the agent\'s office staff ID) — mandatory and numeric.</li>';
-            var tail='<li>Only the agents whose IDs are in the file are updated; everyone else keeps their current value. IDs that don\'t match an agent on this page are ignored.</li>';
-            document.getElementById('upRules').innerHTML = inc
-                ? common+'<li><b>Column B = Incentive amount</b> (numeric). If the cell is empty, that agent\'s incentive is set to 0.</li><li>Columns from C onward are ignored.</li>'+tail
-                : common+'<li><b>Column B = Overtime hours</b> (numeric). Empty counts as 0.</li><li><b>Column C = Calculation</b> (“Multiplier” or “Fixed”). Empty defaults to Multiplier.</li><li><b>Column D = Multiplier or fixed amount per hour</b> (numeric). For a multiplier, empty defaults to 1.25 and any value below 1.25 is raised to 1.25; a fixed amount must be above 0.</li><li>Columns from E onward are ignored.</li>'+tail;
+        function openUpload(){ // same layout as the V2 mockup's "Upload incentives from Excel"
+            var inc=bulkMode==='inc', am=isMgr(), n=B().order.map(function(id){ return ROWS_BY_ID[id]; }).filter(bfMatch).length;
+            document.getElementById('upTitle').textContent = inc ? 'Upload incentives from Excel' : 'Upload overtime from Excel';
+            document.getElementById('upLead').innerHTML = inc
+                ? 'Upload an Excel file with your agent IDs in column A and each agent\'s incentive amount in column B, and the system will fill in the Incentive Amount column automatically. Download your file below — it already lists your agents with their current values, so you only need to fill in the amounts.'
+                : 'Upload an Excel file with your agent IDs in column A, the overtime hours in column B, the calculation (Multiplier or Fixed) in column C and the multiplier or fixed amount per hour in column D, and the system will fill in the table automatically. Download your file below — it already lists your agents with their current values.';
+            document.getElementById('upDlHint').innerHTML = '<b>'+n+'</b> agent'+(n===1?'':'s')+(bfActive()?' matching your current filters':'')+' &middot; includes Employee Name, Direct Manager, Job Title, Department, Location and Employee Type';
+            document.getElementById('upWarn').textContent = inc
+                ? 'Once you confirm, the incentive amount of every agent whose ID is in the sheet will be overridden with the sheet\'s value. Any agent whose ID is not in the sheet keeps their current value.'
+                : 'Once you confirm, the overtime values of every agent whose ID is in the sheet will be overridden with the sheet\'s values. Any agent whose ID is not in the sheet keeps their current values.';
             resetUpload(); openModal('uploadModal');
         }
-        function downloadSample(mode){
-            if(typeof XLSX==='undefined'){ toastHtml('neutral','The Excel tools could not load. Please refresh and try again.'); return; }
-            var list=ctxAgents().slice().sort(function(a,b){ return a.name.localeCompare(b.name); }).slice(0,6), aoa;
-            if(mode==='inc'){ var amts=[500,750,300,1000,0,250]; aoa=[['ID','Incentive'].concat(REF_HEAD)].concat(list.map(function(r,i){ return [r.staffId, amts[i]].concat(refCols(r)); })); saveFile('agents_incentives_sample.xlsx', buildXlsx(aoa,'Incentives',[10,12].concat(REF_W))); }
-            else { var hs=[6,4,10,0,8,3], ts=['Multiplier','Fixed','Multiplier','Multiplier','Fixed','Multiplier'], vs=[1.25,5,1.5,1.25,10,2]; aoa=[['ID','Overtime Hours','Calculation','Multiplier / Fixed Amount per Hour'].concat(REF_HEAD)].concat(list.map(function(r,i){ return [r.staffId, hs[i], ts[i], vs[i]].concat(refCols(r)); })); saveFile('agents_overtime_sample.xlsx', buildXlsx(aoa,'Overtime',[10,15,13,32].concat(REF_W))); }
-        }
-        document.getElementById('upSample').addEventListener('click', function(){ downloadSample(bulkMode); });
         function resetUpload(){
             upState=null; document.getElementById('upFile').value='';
             var d=document.getElementById('upDrop'); d.classList.remove('has-file','drag');
-            document.getElementById('upDropTxt').textContent='Click to choose an Excel file, or drag it here';
+            document.getElementById('upDropTxt').innerHTML='<u class="up-choose">Choose a file</u> or drag it here';
             var res=document.getElementById('upResult'); res.className='up-result'; res.innerHTML='';
             document.getElementById('upConfirm').disabled=true;
         }
@@ -7761,8 +7785,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
             seed('Maria Santos Cruz','inc',{ 'Cinda Rose Sekareah':150, 'Nguyen Van Anh':80, 'Sok Pisey Chan':60 },10,14);
             seed('Maria Santos Cruz','ot',{ 'Nguyen Van Anh':{ h:6, t:'m', m:1.5, f:0 }, 'Sok Pisey Chan':{ h:4, t:'f', m:1.25, f:5 }, 'Cinda Rose Sekareah':{ h:3, t:'m', m:1.25, f:0 } },10,20);
-            seed('Daniel John Smith','inc',{ 'Ravi Kumar Sharma':8000, 'Miguel Angel Torres':120, 'Amara Chidinma Okafor':900 },11,40);
-            var dOt=store('ot','mgr:Daniel John Smith'); dOt.saved[byName['Amara Chidinma Okafor']._id]={ h:5, t:'m', m:1.25, f:0 }; dOt.savedAt=new Date(TODAY); // draft, not sent
+            seed('Daniel John Smith','inc',{ 'Ravi Kumar Sharma':8000 },11,40);
+            var dOt=store('ot','mgr:Daniel John Smith'); dOt.saved[byName['Ravi Kumar Sharma']._id]={ h:5, t:'m', m:1.25, f:0 }; dOt.savedAt=new Date(TODAY); // draft, not sent
         })();
 
         function v2Init(){ syncSalToggles(); updatePendingBadge(); updateBulkButtons(); updateApprovalsBadge(); }

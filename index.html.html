@@ -5641,6 +5641,17 @@ textarea.form-control {
     #tabApprovals { display: none !important; }
     .appr-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
     .appr-head h2 { margin: 0; font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+    .plain-name { font-weight: 600; color: var(--text-primary); }
+    details.no-inc { padding: 0; }
+    details.no-inc > summary { cursor: pointer; padding: 0.9rem 1.1rem; font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; list-style: none; }
+    details.no-inc > summary::-webkit-details-marker { display: none; }
+    details.no-inc > summary::before { content: '\25B8'; color: var(--text-muted); transition: transform 0.15s; }
+    details.no-inc[open] > summary::before { transform: rotate(90deg); }
+    details.no-inc > summary i { color: var(--text-muted); }
+    details.no-inc > summary .muted { font-weight: 400; font-size: 0.78rem; color: var(--text-muted); }
+    details.no-inc[open] > summary { border-bottom: 1px solid var(--border-color); }
+    details.no-inc .appr-wrap, details.no-inc .appr-empty { margin: 0.8rem 1.1rem 1rem; border: 1px solid var(--border-color); border-radius: 0.6rem; }
+    .b-not-entered { background: var(--bg-tertiary); color: var(--text-muted); border: 1px dashed var(--border-color); }
     </style>
 </head>
 <body>
@@ -5692,9 +5703,9 @@ textarea.form-control {
                         <select id="demoRole">
                             <option value="fm">Final Manager — Mario Gharios</option>
                             <option value="pil" selected>Accountable PIL — Omar Yossef</option>
-                            <option value="mgr:Maria Santos Cruz">Team Manager — Maria Santos Cruz</option>
-                            <option value="mgr:Daniel John Smith">Team Manager — Daniel John Smith</option>
-                            <option value="mgr:Khalid Saeed Al Falasi">Team Manager — Khalid Saeed Al Falasi</option>
+                            <option value="mgr:Maria Santos Cruz">PIL — Maria Santos Cruz</option>
+                            <option value="mgr:Daniel John Smith">PIL — Daniel John Smith</option>
+                            <option value="mgr:Khalid Saeed Al Falasi">PIL — Khalid Saeed Al Falasi</option>
                         </select></label>
                     
                     <a href="https://org.maidstech.ai/org-chart" target="_blank" rel="noopener noreferrer" class="header-icon-btn" title="Org Chart"><i class="fas fa-sitemap"></i></a>
@@ -5790,7 +5801,7 @@ textarea.form-control {
                             <button type="button" class="btn btn-outline btn-sm" id="btnPending"><i class="fas fa-hourglass-half" style="color:#d97706;"></i> Pending Requests <span class="pr-count" id="prCount">0</span></button>
                             <button type="button" class="btn btn-outline btn-sm" id="btnInc" title="In production this page opens on the 22nd of the month (00:00) and closes once you submit"><i class="fas fa-hand-holding-dollar" style="color:#7c3aed;"></i> <span class="lbl">Agents' Incentives</span></button>
                             <button type="button" class="btn btn-outline btn-sm" id="btnOT" title="In production this page opens on the 22nd of the month (00:00) and closes once you submit"><i class="fas fa-business-time" style="color:#0ea5e9;"></i> <span class="lbl">Agents' Overtime</span></button>
-                            <button type="button" class="btn btn-outline btn-sm" id="btnSubs" title="Incentives and overtime your team managers sent for your approval"><i class="fas fa-inbox" style="color:#d97706;"></i> Incentives &amp; Overtime Approvals <span class="pr-count" id="subsCount">0</span></button>
+                            <button type="button" class="btn btn-outline btn-sm" id="btnSubs" title="Incentives and overtime your PILs sent for your approval"><i class="fas fa-inbox" style="color:#d97706;"></i> Incentives &amp; Overtime Approvals <span class="pr-count" id="subsCount">0</span></button>
                         <div class="cols-wrap" id="colsWrap">
                             <button type="button" class="btn btn-outline btn-sm" id="btnCols"><i class="fas fa-table-columns"></i> Show additional columns <i class="fas fa-chevron-down" style="font-size:0.6rem;"></i></button>
                             <div class="cols-panel">
@@ -7138,7 +7149,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         document.getElementById('bcConfirm').addEventListener('click', function(){ var fn=bcAction; bcAction=null; closeModal('bulkConfirmModal'); if(fn) fn(); });
 
-        /* ---------- Agents' Incentives / Agents' Overtime (PIL / final manager) & Agents Management (team managers) ---------- */
+        /* ---------- Agents' Incentives / Agents' Overtime (PIL / final manager) & Agents Management (PILs) ---------- */
         function isAgent(r){ return !r.isManager && EXCLUDED_PNL.indexOf(r.pnl)===-1; }
         function agents(){ return ALL.filter(isAgent); }
         function ctxKey(){ return isMgr() ? 'mgr:'+state.mgrName : state.role; }
@@ -7205,7 +7216,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         var SUBS={}; // key "manager|mode" -> { mgr, mode, sentAt, items:{ rowId:{ val, status:'pending'|'approved'|'rejected'|'overridden', reason, edit, approvedVal, edited } } }
         function subKey(mgr, mode){ return mgr+'|'+mode; }
         function pilOwns(mode, r){ var s=store(mode,'pil'); return hasValue(mode, r, s.saved); }
-        function effStatus(mode, r, it){ return (it.status==='pending' && pilOwns(mode, r)) ? 'overridden' : it.status; }
+        function effStatus(mode, r, it){ return it.status; }
         function mgrItem(mode, r){ var s=SUBS[subKey(r.manager, mode)]; return s ? s.items[r._id] : null; }
         function pendingApprovalsCount(){
             var n=0;
@@ -7224,7 +7235,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
         }
         document.addEventListener('click', function(e){ if(e.target.closest('#apprGo') || e.target.closest('#btnSubs')){ document.getElementById('tabApprovals').click(); window.scrollTo(0,0); } if(e.target.closest('#apprBack')){ document.querySelector('.roster-tab[data-tab="all"]').click(); } });
-        function rowLocked(mode, r){ if(!isMgr()) return false; var it=mgrItem(mode, r); if(!it) return false; var st=effStatus(mode, r, it); return st==='approved' || st==='overridden'; }
+        function rowLocked(mode, r){ if(!isMgr()) return false; var it=mgrItem(mode, r); if(!it) return false; var st=effStatus(mode, r, it); return st==='approved'; }
 
         function updateBulkButtons(){
             var has=agents().length>0;
@@ -7250,19 +7261,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             document.querySelector('.header-title').textContent='Payroll Roster';
             renderAll(); requestAnimationFrame(layout);
         }
-        function openAM(mode){ // team manager's Agents Management page (tabs)
+        function openAM(mode){ // PIL's Agents Management page (tabs)
             bulkMode=mode; var b=store(mode);
             if(!b.init){ b.work=clone(b.saved); b.init=true; computeOrder(mode); }
             buildBulkFilters(); renderBulk();
         }
-        function statusCell(mode, r){
+        function statusCell(mode, r){ // PIL statuses: Not sent · Pending approval · Approved · Amount changed · Rejected
             var it=mgrItem(mode, r), b=B();
-            if(!it) return hasValue(mode,r,b.work) ? '<span class="badge b-onhold-no">Draft &middot; not sent</span>' : '<span class="num-zero">&mdash;</span>';
-            var st=effStatus(mode, r, it);
-            if(st==='pending') return '<span class="badge badge-pending">Awaiting '+esc(PIL_NAME)+'</span>';
-            if(st==='approved') return '<span class="badge badge-approved"><i class="fas fa-check"></i> Approved</span>'+(it.edited?'<span class="sub-note">Edited by '+esc(PIL_NAME)+' to '+esc(valText(mode,r,it.approvedVal))+'</span>':'');
-            if(st==='overridden') return '<span class="badge b-type-overseas">Set by '+esc(PIL_NAME)+'</span><span class="sub-note">Your value was replaced by your accountable PIL</span>';
-            return '<span class="badge b-terminated">Returned</span><span class="sub-note">'+(it.reason?'Reason: '+esc(it.reason):'Rejected by '+esc(PIL_NAME))+' &middot; edit and resend</span>';
+            var sent = it && normWork(mode,{x:b.work[r._id]})===normWork(mode,{x:it.val});
+            if(!it || (it.status!=='approved' && !sent)) return '<span class="badge b-onhold-no">Not sent</span>';
+            if(it.status==='pending') return '<span class="badge badge-pending">Pending approval</span>';
+            if(it.status==='approved') return it.edited
+                ? '<span class="badge b-type-overseas">Amount changed</span><span class="sub-note">Approved by '+esc(PIL_NAME)+' as '+esc(valText(mode,r,it.approvedVal))+'</span>'
+                : '<span class="badge badge-approved"><i class="fas fa-check"></i> Approved</span>';
+            return '<span class="badge b-terminated">Rejected</span><span class="sub-note">'+(it.reason?'Reason: '+esc(it.reason)+' &middot; ':'')+'edit and resend</span>';
         }
         function renderBulk(){
             if(!bulkMode) return;
@@ -7284,13 +7296,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                        : "Enter the overtime hours for each agent, with a multiplier or a fixed amount per hour. The overtime amount is calculated automatically and sent to payroll as a bonus manager note for the final manager's approval.");
             var info = am
                 ? 'This page covers the <b>agents</b> in your team (direct and indirect). It opens on <b>'+FULLMON[TODAY.getMonth()]+' 22, 00:00</b>; please send by <b>'+FULLMON[TODAY.getMonth()]+' 24</b> so '+esc(PIL_NAME)+' has time to review. You can edit and resend anything that hasn\'t been approved yet — the latest version replaces the previous one.'
-                : 'This page covers your <b>agents</b> only (team members who are not managers and whose PnL code is not excluded). In production it opens on <b>'+FULLMON[TODAY.getMonth()]+' 22, 00:00</b> and is no longer available once you submit for '+MONTH_LABEL+'. Values sent by your team managers are shown under each name; a value you enter here replaces theirs.';
+                : 'This page covers your <b>agents</b> only (team members who are not managers and whose PnL code is not excluded). In production it opens on <b>'+FULLMON[TODAY.getMonth()]+' 22, 00:00</b> and is no longer available once you submit for '+MONTH_LABEL+'. Values sent by your PILs are shown under each name.';
             info += inc ? ' Agents in the <b>Retail</b> department are submitted with the purpose “Retail Incentive”; all others with “Bonus”. Fractions are rounded up.'
                         : '<br><span class="formula">Multiplier: ⌈ (Basic Salary ÷ 30.4 ÷ 9) × Hours × Multiplier ⌉</span> &nbsp;<span class="formula">Fixed: ⌈ Hours × Fixed amount per hour ⌉</span> &nbsp;Minimum multiplier 1.25.';
             if(am && sub){
-                var cnt={ pending:0, approved:0, rejected:0, overridden:0 };
+                var cnt={ pending:0, approved:0, rejected:0 };
                 Object.keys(sub.items).forEach(function(id){ cnt[effStatus(mode, ROWS_BY_ID[id], sub.items[id])]++; });
-                info += '<div class="am-status"><i class="fas fa-paper-plane"></i> Sent to '+esc(PIL_NAME)+' on <b>'+fmtDT(sub.sentAt)+'</b> &middot; '+cnt.pending+' awaiting &middot; '+cnt.approved+' approved &middot; '+cnt.rejected+' returned'+(cnt.overridden?' &middot; '+cnt.overridden+' set by '+esc(PIL_NAME):'')+'</div>';
+                info += '<div class="am-status"><i class="fas fa-paper-plane"></i> Sent to '+esc(PIL_NAME)+' on <b>'+fmtDT(sub.sentAt)+'</b> &middot; '+cnt.pending+' pending approval &middot; '+cnt.approved+' approved &middot; '+cnt.rejected+' rejected</div>';
             }
             document.getElementById('bulkInfo').innerHTML='<i class="fas fa-circle-info"></i><div>'+info+'</div>';
 
@@ -7302,9 +7314,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             rows.forEach(function(r){
                 var id=r._id, locked=rowLocked(mode, r), dis=locked?' disabled':'';
                 var note='';
-                if(!am){ var it=mgrItem(mode, r); if(it && effStatus(mode,r,it)!=='approved' && it.status!=='rejected'){ note='<span class="sub-note mgr-note"><i class="fas fa-user-pen"></i> Sent by '+esc(r.manager)+': '+esc(valText(mode,r,it.val))+(hasValue(mode,r,b.work)?' &middot; <b>your value replaces it</b>':' &middot; awaiting your approval')+'</span>'; } }
+                if(!am){ var it=mgrItem(mode, r); if(it && it.status==='pending'){ note='<span class="sub-note mgr-note"><i class="fas fa-user-pen"></i> Sent by '+esc(r.manager)+': '+esc(valText(mode,r,it.val))+' &middot; pending your approval'+'</span>'; } }
                 html+='<tr class="'+(hasValue(mode,r,b.work)?'has-val':'')+(locked?' row-locked':'')+'" data-row="'+id+'">'
-                    +'<td class="col-name"><a href="#" class="cell-name emp-name-link" data-history-id="'+id+'">'+esc(r.name)+'</a>'+note+'</td>'
+                    +'<td class="col-name">'+(am ? '<span class="cell-name plain-name">'+esc(r.name)+'</span>' : '<a href="#" class="cell-name emp-name-link" data-history-id="'+id+'">'+esc(r.name)+'</a>')+note+'</td>'
                     +'<td>'+esc(r.manager)+'</td>'
                     +'<td class="wrap">'+esc((r.dept||[]).join(', '))+'</td>'
                     +'<td class="wrap"><span class="jt-main">'+esc(r.titleMain)+'</span><span class="jt-spec">('+esc(r.titleSpec)+')</span></td>'
@@ -7410,7 +7422,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             document.getElementById('pctAck').checked=false;
             document.getElementById('pctAckWrap').style.display = strong ? '' : 'none';
             var c=document.getElementById('pctConfirm');
-            c.className='btn '+(strong?'btn-danger':'btn-primary'); c.innerHTML = strong ? '<i class="fas fa-check"></i> Yes, the amount is correct' : '<i class="fas fa-check"></i> Yes, continue';
+            c.className='btn '+(strong?'btn-danger':'btn-primary'); c.innerHTML = strong ? '<i class="fas fa-check"></i> Yes, the amount is correct' : '<i class="fas fa-check"></i> Proceed';
             c.disabled = strong;
             openModal('pctModal');
         }
@@ -7419,16 +7431,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function pctCancelFn(){ var fn=pctCancel; pctNext=null; pctCancel=null; closeModal('pctModal'); if(fn) fn(); }
         document.getElementById('pctCancel').addEventListener('click', pctCancelFn);
         document.getElementById('pctClose').addEventListener('click', pctCancelFn);
-        // Single change (Add Salary Raise / Add Bonus / editing a pending raise or bonus)
+        // Single change (Add Salary Raise / Add Bonus / editing a pending raise or bonus) — one popup for anything above 50%
         function checkPctSingle(type, amount, next){
             if(type!=='raise' && type!=='bonus'){ next(); return; }
             var r=modalRow, pct=pctOf(r, amount); if(pct<=50){ next(); return; }
-            var noun=type==='raise'?'salary raise':'bonus', p=Math.round(pct), strong=pct>=100;
-            openPct({ strong:strong,
-                title: strong ? 'Please double-check this '+noun : 'This '+noun+' is more than 50% of the basic salary',
-                body: strong
-                    ? 'You\'re adding a '+noun+' of <b>'+fmtRaw(amount,r.cur)+'</b> for <b>'+esc(r.name)+'</b>, which is <b>'+p+'%</b> of their basic salary ('+fmt(r.basic,r.cur)+') — equal to or more than their entire basic salary.<div class="cb-q">Please make sure this isn\'t a typo, an extra zero or the wrong employee before continuing.</div>'
-                    : 'You\'re adding a '+noun+' of <b>'+fmtRaw(amount,r.cur)+'</b> for <b>'+esc(r.name)+'</b>, which is <b>'+p+'%</b> of their basic salary ('+fmt(r.basic,r.cur)+').<div class="cb-q">Do you want to continue?</div>'
+            var noun=type==='raise'?'salary raise':'bonus', p=Math.round(pct);
+            openPct({ strong:true,
+                title: 'Please double-check this '+noun,
+                body: 'You\'re adding a '+noun+' of <b>'+fmtRaw(amount,r.cur)+'</b> for <b>'+esc(r.name)+'</b>, which is <b>'+p+'%</b> of their basic salary ('+fmt(r.basic,r.cur)+')'+(pct>=100?' — equal to or more than their entire basic salary':'')+'.<div class="cb-q">Please make sure this isn\'t a typo, an extra zero or the wrong employee before continuing.</div>'
             }, next, function(){ pendingSubmit=null; });
         }
         function continueDup(type, amount){
@@ -7442,16 +7452,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
             doSubmit();
         }
-        // Bulk pages: one alert on submit / send listing every agent above 50%
+        // Bulk pages: one alert on submit / send listing every agent above 50% — same popup as above
         function checkPctBulk(mode, rows, w, next){
             var over=rows.map(function(r){ var a=entryAmount(mode,r,w); return { r:r, a:a, p:pctOf(r,a) }; }).filter(function(x){ return x.p>50; }).sort(function(a,b){ return b.p-a.p; });
             if(!over.length){ next(); return; }
-            var strong=over.some(function(x){ return x.p>=100; }), what=mode==='inc'?'incentive':'overtime amount';
-            var list='<ul class="pct-list">'+over.map(function(x){ return '<li class="'+(x.p>=100?'hi':'')+'"><b>'+esc(x.r.name)+'</b> — '+fmtRaw(x.a,x.r.cur)+' = <b>'+Math.round(x.p)+'%</b> of basic salary ('+fmt(x.r.basic,x.r.cur)+')</li>'; }).join('')+'</ul>';
-            openPct({ strong:strong,
-                title: strong ? 'Please double-check these amounts' : 'Some amounts are more than 50% of the basic salary',
-                body: (strong ? 'The '+what+' for some agents is <b>equal to or more than their entire basic salary</b>. Please make sure there\'s no typo, extra zero or wrong agent:' : 'The '+what+' for the following agents is more than 50% of their basic salary:')
-                      + list + '<div class="cb-q">'+(strong?'Only continue if you\'re sure these amounts are correct.':'Do you want to continue?')+'</div>'
+            var what=mode==='inc'?'incentive':'overtime amount';
+            var list='<ul class="pct-list">'+over.map(function(x){ return '<li class="hi"><b>'+esc(x.r.name)+'</b> — '+fmtRaw(x.a,x.r.cur)+' = <b>'+Math.round(x.p)+'%</b> of basic salary ('+fmt(x.r.basic,x.r.cur)+')</li>'; }).join('')+'</ul>';
+            openPct({ strong:true,
+                title: 'Please double-check these amounts',
+                body: 'The '+what+' for the following agents is more than 50% of their basic salary. Please make sure there\'s no typo, extra zero or wrong agent:'
+                      + list + '<div class="cb-q">Only continue if you\'re sure these amounts are correct.</div>'
             }, next);
         }
 
@@ -7481,7 +7491,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 b.saved=clone(b.work); b.savedAt=new Date(); b.submitted=true;
                 rows.forEach(function(r){
                     pushBonus(mode, r, entryAmount(mode,r,b.work));
-                    var it=mgrItem(mode, r); if(it && it.status==='pending') it.status='overridden'; // the PIL's value wins
+                    
                 });
                 closeBulk();
                 toastHtml('success','<b>'+rows.length+'</b> '+(inc?'incentives were':'overtime amounts were')+' sent to Office Staff Payroll as bonuses and are now pending the final manager\'s approval.');
@@ -7501,7 +7511,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 + '<div class="cb-q">You can still edit and resend until '+esc(PIL_NAME)+' approves or returns them.</div>';
             bcOpen(resend?'Resend for confirmation?':'Send for confirmation?', body, '<i class="fas fa-paper-plane"></i> '+(resend?'Resend':'Send'), 'primary', function(){
                 var sub=SUBS[key]||{ mgr:state.mgrName, mode:mode, items:{} };
-                Object.keys(sub.items).forEach(function(id){ var st=sub.items[id].status; if(st!=='approved' && st!=='overridden') delete sub.items[id]; });
+                Object.keys(sub.items).forEach(function(id){ var st=sub.items[id].status; if(st!=='approved') delete sub.items[id]; });
                 rows.forEach(function(r){ sub.items[r._id]={ val:clone(b.work[r._id]), status:'pending', reason:'' }; });
                 sub.sentAt=new Date(); SUBS[key]=sub;
                 b.saved=clone(b.work); b.savedAt=new Date(); computeOrder(mode);
@@ -7543,9 +7553,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 }
                 var act;
                 if(pend) act='<span class="pr-acts"><button type="button" class="pr-act appr" data-ap-ok="'+key+'"><i class="fas fa-check"></i> Approve</button><button type="button" class="pr-act del" data-ap-no="'+key+'"><i class="fas fa-xmark"></i> Reject</button></span>';
-                else if(st==='approved') act='<span class="badge badge-approved"><i class="fas fa-check"></i> Approved</span><span class="sub-note">Sent to payroll'+(it.edited?' &middot; edited by you':'')+'</span>';
-                else if(st==='overridden'){ var own=store(mode,'pil'); act='<span class="badge b-type-overseas">Your value wins</span><span class="sub-note">Your own value: '+esc(valText(mode,r,own.saved[r._id]))+'</span>'; }
-                else act='<span class="badge b-terminated">Rejected</span><span class="sub-note">'+(it.reason?esc(it.reason):'Returned to '+esc(sub.mgr))+'</span>';
+                else if(st==='approved') act = it.edited ? '<span class="badge b-type-overseas"><i class="fas fa-pen"></i> Changed</span><span class="sub-note">Approved as '+esc(valText(mode,r,it.approvedVal))+'</span>' : '<span class="badge badge-approved"><i class="fas fa-check"></i> Approved</span>';
+                else act='<span class="badge b-terminated">Rejected</span>'+(it.reason?'<span class="sub-note">'+esc(it.reason)+'</span>':'');
                 html+='<td>'+act+'</td></tr>';
             });
             return html;
@@ -7556,7 +7565,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 var mode=sec[0], subs=Object.keys(SUBS).map(function(k){ return SUBS[k]; }).filter(function(s){ return s.mode===mode && Object.keys(s.items).length; }).sort(function(a,b){ return new Date(b.sentAt)-new Date(a.sentAt); });
                 var pendN=0; subs.forEach(function(s){ Object.keys(s.items).forEach(function(id){ if(effStatus(mode,ROWS_BY_ID[id],s.items[id])==='pending') pendN++; }); });
                 html+='<div class="appr-section"><div class="appr-sec-head"><h3><i class="fas '+sec[2]+'" style="color:'+sec[3]+';"></i> '+sec[1]+'</h3><span class="badge '+(pendN?'badge-pending':'b-onhold-no')+'">'+pendN+' awaiting your approval</span></div>';
-                if(!subs.length){ html+='<div class="appr-empty"><i class="fas fa-inbox"></i> No '+sec[1].toLowerCase()+' were sent by your team managers yet.</div></div>'; return; }
+                if(!subs.length){ html+='<div class="appr-empty"><i class="fas fa-inbox"></i> No '+sec[1].toLowerCase()+' were sent by your PILs yet.</div></div>'; return; }
                 subs.forEach(function(s){
                     var n=Object.keys(s.items).length, p=Object.keys(s.items).filter(function(id){ return effStatus(mode,ROWS_BY_ID[id],s.items[id])==='pending'; }).length;
                     html+='<div class="appr-group"><div class="appr-ghead"><div><i class="fas fa-user-tie"></i> <b>'+esc(s.mgr)+'</b><span class="muted"> &middot; latest version sent '+fmtDT(s.sentAt)+' &middot; '+n+' agent'+(n===1?'':'s')+'</span></div>'
@@ -7567,8 +7576,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 });
                 html+='</div>';
             });
-            panel.innerHTML='<div class="appr-page"><div class="appr-head"><div><h2><i class="fas fa-inbox" style="color:#d97706;"></i> Incentives & Overtime Approvals</h2><div class="bh-sub">Incentives and overtime your team managers sent for your confirmation. Approve, edit or return each entry; approved entries go to payroll as bonuses for the final manager\'s approval.</div></div><button type="button" class="btn btn-outline btn-sm" id="apprBack"><i class="fas fa-arrow-left"></i> Back to Roster</button></div>'+html+'</div>';
+            html+=agentsWithoutIncHtml();
+            panel.innerHTML='<div class="appr-page"><div class="appr-head"><div><h2><i class="fas fa-inbox" style="color:#d97706;"></i> Incentives & Overtime Approvals</h2><div class="bh-sub">Incentives and overtime your PILs sent for your confirmation. Approve, edit or return each entry; approved entries go to payroll as bonuses for the final manager\'s approval.</div></div><button type="button" class="btn btn-outline btn-sm" id="apprBack"><i class="fas fa-arrow-left"></i> Back to Roster</button></div>'+html+'</div>';
             var rc=document.getElementById('rowCount'); if(rc) rc.textContent='';
+        }
+        function agentsWithoutIncHtml(){
+            var own=store('inc', state.role==='fm'?'fm':'pil');
+            var list=agents().filter(function(r){
+                if(hasValue('inc', r, own.saved)) return false;
+                var it=mgrItem('inc', r);
+                return !(it && (it.status==='pending' || it.status==='approved'));
+            }).sort(function(a,b){ return a.name.localeCompare(b.name); });
+            var body = list.length
+                ? '<div class="appr-wrap"><table class="roster-table"><thead><tr><th class="col-name">Office Staff Name</th><th>Manager</th><th class="wrap">Department</th><th class="wrap">Job Title</th><th>Employee Type</th></tr></thead><tbody>'
+                  + list.map(function(r){ return '<tr><td class="col-name"><a href="#" class="cell-name emp-name-link" data-history-id="'+r._id+'">'+esc(r.name)+'</a></td><td>'+esc(r.manager)+'</td><td class="wrap">'+esc((r.dept||[]).join(', '))+'</td><td class="wrap"><span class="jt-main">'+esc(r.titleMain)+'</span><span class="jt-spec">('+esc(r.titleSpec)+')</span></td><td>'+typeBadge(r.empType)+'</td></tr>'; }).join('')
+                  + '</tbody></table></div>'
+                : '<div class="appr-empty"><i class="fas fa-circle-check"></i> Every agent has an incentive.</div>';
+            return '<details class="appr-section no-inc"><summary><i class="fas fa-user-slash"></i> Agents without incentives <span class="badge b-onhold-no">'+list.length+'</span><span class="muted"> &middot; not sent by a PIL (or rejected) and not set on your own Agents\' Incentives page</span></summary>'+body+'</details>';
         }
         function apLookup(key){ var p=key.split('|'); var s=SUBS[p[0]+'|'+p[1]]; return { sub:s, mode:p[1], r:ROWS_BY_ID[p[2]], it:s.items[p[2]] }; }
         panel.addEventListener('input', function(e){
@@ -7769,12 +7793,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             var list=agents().slice().sort(function(a,b){ return a.name.localeCompare(b.name); });
             var INC_AED=[750,1200,500,1500,900,650], INC_USD=[120,80,150,60], ai=0, ui=0, pil=store('inc','pil'), pilOt=store('ot','pil'), k=0;
             list.forEach(function(r){
-                if(TEAM_SUB[r.manager]) return; // handled by team managers
-                if(k%3!==2) pil.saved[r._id] = r.cur==='USD' ? INC_USD[ui++%INC_USD.length] : INC_AED[ai++%INC_AED.length];
+                if(TEAM_SUB[r.manager]) return; // handled by PILs
+                if(k%2===1) pil.saved[r._id] = r.cur==='USD' ? INC_USD[ui++%INC_USD.length] : INC_AED[ai++%INC_AED.length];
                 if(k%2===0){ var H=[6,4,10,8], M=[1.25,1.5,1.25,2]; pilOt.saved[r._id]={ h:H[(k/2)%4], t:'m', m:M[(k/2)%4], f:0 }; }
                 k++;
             });
-            pil.saved[byName['Cinda Rose Sekareah']._id]=200; // overlaps Maria's value -> "Your value wins"
+            
             pilOt.saved[byName['Fatima Ali Al Zaabi']._id]={ h:5, t:'f', m:1.25, f:40 };
             pil.savedAt=new Date(TODAY); pilOt.savedAt=new Date(TODAY);
             var fm=store('inc','fm'), fmOt=store('ot','fm'); fm.saved=clone(pil.saved); fmOt.saved=clone(pilOt.saved); fm.savedAt=fmOt.savedAt=new Date(TODAY);
@@ -7783,7 +7807,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 Object.keys(vals).forEach(function(n){ var id=byName[n]._id; s.saved[id]=clone(vals[n]); sub.items[id]={ val:clone(vals[n]), status:'pending', reason:'' }; });
                 s.savedAt=new Date(TODAY); SUBS[subKey(mgr,mode)]=sub;
             }
-            seed('Maria Santos Cruz','inc',{ 'Cinda Rose Sekareah':150, 'Nguyen Van Anh':80, 'Sok Pisey Chan':60 },10,14);
+            seed('Maria Santos Cruz','inc',{ 'Nguyen Van Anh':80, 'Sok Pisey Chan':60 },10,14);
             seed('Maria Santos Cruz','ot',{ 'Nguyen Van Anh':{ h:6, t:'m', m:1.5, f:0 }, 'Sok Pisey Chan':{ h:4, t:'f', m:1.25, f:5 }, 'Cinda Rose Sekareah':{ h:3, t:'m', m:1.25, f:0 } },10,20);
             seed('Daniel John Smith','inc',{ 'Ravi Kumar Sharma':8000 },11,40);
             var dOt=store('ot','mgr:Daniel John Smith'); dOt.saved[byName['Ravi Kumar Sharma']._id]={ h:5, t:'m', m:1.25, f:0 }; dOt.savedAt=new Date(TODAY); // draft, not sent
